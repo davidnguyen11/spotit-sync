@@ -3,7 +3,7 @@ import { db } from '@/firebase/client';
 import { doc, updateDoc, arrayUnion, getDoc, setDoc } from 'firebase/firestore';
 
 interface Payload {
-  clientId: string;
+  username: string;
   trackId: string;
   trackName: string;
   artistId: string;
@@ -18,10 +18,10 @@ interface Payload {
 export async function POST(request: NextRequest) {
   const rawData = await request.text();
   const body: Payload = JSON.parse(rawData);
-  const { clientId, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action } = body;
+  const { username, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action } = body;
 
   if (
-    !clientId ||
+    !username ||
     !trackId ||
     !trackName ||
     !artistId ||
@@ -34,10 +34,10 @@ export async function POST(request: NextRequest) {
     return new Response(null, { status: 400 });
   }
 
-  const docRef = doc(db, 'user_tracks', clientId);
+  const docRef = doc(db, 'user_tracks', username);
 
   const data = {
-    clientId,
+    username,
     trackId,
     trackName,
     artistId,
