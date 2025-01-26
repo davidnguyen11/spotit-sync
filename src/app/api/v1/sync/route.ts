@@ -9,15 +9,28 @@ interface Payload {
   artistId: string;
   artistName: string;
   genres: Array<string>;
-  created_at: Date;
+  createdAt: Date;
+  durationMs: number;
+  progressMs: number;
+  action: string;
 }
 
 export async function POST(request: NextRequest) {
   const rawData = await request.text();
   const body: Payload = JSON.parse(rawData);
-  const { clientId, trackId, trackName, artistId, artistName, genres } = body;
+  const { clientId, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action } = body;
 
-  if (!clientId || !trackId || !trackName || !artistId || !artistName || !genres) {
+  if (
+    !clientId ||
+    !trackId ||
+    !trackName ||
+    !artistId ||
+    !artistName ||
+    !genres ||
+    !durationMs ||
+    !progressMs ||
+    !action
+  ) {
     return new Response(null, { status: 400 });
   }
 
@@ -30,7 +43,10 @@ export async function POST(request: NextRequest) {
     artistId,
     artistName,
     genres,
-    created_at: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    durationMs,
+    progressMs,
+    action,
   };
 
   try {
