@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     return new Response(null, { status: 400 });
   }
 
-  const docRef = doc(db, 'user_tracks', 'all_tracks'); // You can name this document "all_tracks"
+  const docRef = doc(db, 'user_tracks', clientId);
 
   const data = {
     clientId,
