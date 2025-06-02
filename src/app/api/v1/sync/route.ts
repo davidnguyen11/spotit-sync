@@ -13,12 +13,14 @@ interface Payload {
   durationMs: number;
   progressMs: number;
   action: string;
+  email: string;
+  userDisplayName: string;
 }
 
 export async function POST(request: NextRequest) {
   const rawData = await request.text();
   const body: Payload = JSON.parse(rawData);
-  const { username, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action } = body;
+  const { username, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action, email, userDisplayName } = body;
 
   if (
     !username ||
@@ -29,12 +31,15 @@ export async function POST(request: NextRequest) {
     !genres ||
     !durationMs ||
     !progressMs ||
-    !action
+    !action ||
+    !email ||
+    !userDisplayName
   ) {
     return new Response(null, { status: 400 });
   }
 
   const docRef = doc(db, 'user_tracks', username);
+  const userRef = doc(db, 'user_info', username);
 
   const data = {
     username,
@@ -63,6 +68,18 @@ export async function POST(request: NextRequest) {
         tracks: [data], // Initialize the tracks array with the first track
       });
     }
+
+    const userSnap = await getDoc(userRef);
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        user: {
+          username,
+          email,
+          displayName: userDisplayName,
+        }
+      });
+    }
+
     return new Response(null, { status: 204 });
   } catch (err) {
     console.log(err);
