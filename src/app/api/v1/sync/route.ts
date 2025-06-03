@@ -15,12 +15,26 @@ interface Payload {
   action: string;
   email: string;
   userDisplayName: string;
+  country: string;
 }
 
 export async function POST(request: NextRequest) {
   const rawData = await request.text();
   const body: Payload = JSON.parse(rawData);
-  const { username, trackId, trackName, artistId, artistName, genres, durationMs, progressMs, action, email, userDisplayName } = body;
+  const {
+    username,
+    trackId,
+    trackName,
+    artistId,
+    artistName,
+    genres,
+    durationMs,
+    progressMs,
+    action,
+    email,
+    userDisplayName,
+    country,
+  } = body;
 
   if (
     !username ||
@@ -33,7 +47,8 @@ export async function POST(request: NextRequest) {
     !progressMs ||
     !action ||
     !email ||
-    !userDisplayName
+    !userDisplayName ||
+    !country
   ) {
     return new Response(null, { status: 400 });
   }
@@ -75,8 +90,9 @@ export async function POST(request: NextRequest) {
         user: {
           username,
           email,
+          country,
           displayName: userDisplayName,
-        }
+        },
       });
     }
 
